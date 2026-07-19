@@ -1,0 +1,5 @@
+.env
+conversations.json
+turns.jsonl
+results.jsonl
+__pycache__/
