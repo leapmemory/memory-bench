@@ -7,7 +7,9 @@ Two conditions. Same model, same questions, same instructions.
 
 Token counts are read from the provider's billed usage field, never
 counted locally. A probe counts toward the reduction number only if
-BOTH conditions answered it correctly.
+BOTH conditions answered it correctly. After ingest the harness polls
+the LM turns/status endpoint until every turn is indexed; there is no
+fixed settle timer.
 """
 
 import argparse
@@ -120,7 +122,7 @@ def lm_recall_context(tenant, question):
     return "\n\n".join(parts) if parts else "(no memories recalled)"
 
 
-def ingest(tenant, turns, settle_seconds):
+def ingest(tenant, turns):
     for i in range(0, len(turns), 100):
         batch = turns[i : i + 100]
         lm_request(
@@ -129,8 +131,40 @@ def ingest(tenant, turns, settle_seconds):
             {"turns": batch},
         )
         print(f"ingested {i + len(batch)}/{len(turns)} turns")
-    print(f"waiting {settle_seconds}s for extraction to settle...")
-    time.sleep(settle_seconds)
+
+
+def wait_indexed(tenant):
+    """Poll turn statuses until every turn is indexed. No blind sleeps.
+
+    Interval 10s: digestion runs minutes, the status read is one cheap
+    aggregate, finer polling buys nothing. Ceiling 1800s: worst observed
+    full digestion ~15 min for a 98-turn corpus, doubled for margin. A
+    'failed' count is transient while the reconciler retries, so failure
+    only aborts at the ceiling, loudly, with the failed ids.
+    """
+    interval = int(os.environ.get("BENCH_POLL_INTERVAL_SECONDS", "10"))
+    ceiling = int(os.environ.get("BENCH_POLL_CEILING_SECONDS", "1800"))
+    start = time.time()
+    last = None
+    while True:
+        s = lm_request("GET", f"/v1/tenants/{tenant}/turns/status")
+        state = (s["indexed"], s["pending"], s["failed"], s["total"])
+        if state != last:
+            print(
+                f"indexed {s['indexed']}/{s['total']} "
+                f"(pending {s['pending']}, failed {s['failed']})"
+            )
+            last = state
+        if s["indexed"] == s["total"]:
+            print(f"digestion complete in {int(time.time() - start)}s")
+            return
+        if time.time() - start > ceiling:
+            sys.exit(
+                f"digestion did not finish within {ceiling}s: "
+                f"indexed {s['indexed']}/{s['total']}, "
+                f"failed ids: {s['failed_ids']}"
+            )
+        time.sleep(interval)
 
 
 TENANT_FILE = ".bench_tenant"
@@ -176,12 +210,65 @@ def is_correct(answer, expected):
     return any(e.lower() in answer.lower() for e in expected)
 
 
+# ─── Presentation (printing only; results.jsonl stays raw) ───────
+
+BAR_WIDTH = 40  # widest bar in columns; every bar scales off the probe's own baseline
+
+GREEN, RED, DIM, BOLD, RESET = "\033[32m", "\033[31m", "\033[2m", "\033[1m", "\033[0m"
+
+
+def mark(ok):
+    return f"{GREEN}OK{RESET}" if ok else f"{RED}MISS{RESET}"
+
+
+def bar(tokens, baseline_tokens, ch):
+    width = max(1, round(BAR_WIDTH * tokens / baseline_tokens))
+    return ch * width
+
+
+def phase(title):
+    print(f"\n{BOLD}── {title} " + "─" * max(0, 50 - len(title)) + RESET)
+
+
+def print_probe(row):
+    pct = 1 - row["recall_tokens"] / row["baseline_tokens"]
+    print(f"{BOLD}{row['probe']}{RESET}  {row['question'][:60]}")
+    print(
+        f"  baseline {str(row['baseline_tokens']).rjust(5)} tok {mark(row['baseline_correct'])}  "
+        f"{bar(row['baseline_tokens'], row['baseline_tokens'], '░')}"
+    )
+    print(
+        f"  recall   {str(row['recall_tokens']).rjust(5)} tok {mark(row['recall_correct'])}  "
+        f"{GREEN}{bar(row['recall_tokens'], row['baseline_tokens'], '█')}{RESET} ({pct:.0%} less)"
+    )
+
+
+def verdict(rows, scored, reductions):
+    label_width = 22
+    pairs = [
+        ("probes", str(len(rows))),
+        ("baseline accuracy", f"{sum(r['baseline_correct'] for r in rows)}/{len(rows)}"),
+        ("recall accuracy", f"{sum(r['recall_correct'] for r in rows)}/{len(rows)}"),
+        ("scored (both correct)", str(len(scored))),
+    ]
+    if reductions:
+        pairs.append(("median token reduction", f"{statistics.median(reductions):.1%}"))
+        pairs.append(("range", f"{min(reductions):.1%} - {max(reductions):.1%}"))
+    lines = [f"{label.ljust(label_width)} {value}" for label, value in pairs]
+    if not reductions:
+        lines.append("no probes scored; no reduction reported")
+    inner = max(len(l) for l in lines)
+    print("\n┌" + "─" * (inner + 2) + "┐")
+    for l in lines:
+        print(f"│ {l.ljust(inner)} │")
+    print("└" + "─" * (inner + 2) + "┘")
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--corpus", required=True, help="jsonl of conversation turns")
     ap.add_argument("--probes", required=True, help="yaml of questions + expected answers")
     ap.add_argument("--ingest", action="store_true", help="ingest the corpus into the LM tenant first")
-    ap.add_argument("--settle", type=int, default=120, help="seconds to wait after ingest for extraction")
     ap.add_argument("--out", default="results.jsonl", help="raw per-probe output file (gitignored)")
     args = ap.parse_args()
 
@@ -189,11 +276,15 @@ def main():
     probes = load_probes(args.probes)
 
     if args.ingest:
+        phase("ingest")
         tenant = fresh_tenant()
-        ingest(tenant, turns, args.settle)
+        ingest(tenant, turns)
+        phase("digestion")
+        wait_indexed(tenant)
     else:
         tenant = saved_tenant()
     print(f"tenant: {tenant}")
+    phase("probes")
 
     pasted = corpus_as_text(turns)
     rows = []
@@ -215,24 +306,13 @@ def main():
             "recall_correct": is_correct(b_answer, p["expected"]),
         }
         rows.append(row)
-        print(
-            f"{p['id']}: baseline {a_tokens} tok "
-            f"{'OK' if row['baseline_correct'] else 'MISS'} | "
-            f"recall {b_tokens} tok "
-            f"{'OK' if row['recall_correct'] else 'MISS'}"
-        )
+        print_probe(row)
 
     with open(args.out, "w") as f:
         for row in rows:
             f.write(json.dumps(row) + "\n")
 
     scored = [r for r in rows if r["baseline_correct"] and r["recall_correct"]]
-    print("\n== results ==")
-    print(f"probes: {len(rows)}")
-    print(f"baseline accuracy: {sum(r['baseline_correct'] for r in rows)}/{len(rows)}")
-    print(f"recall accuracy:   {sum(r['recall_correct'] for r in rows)}/{len(rows)}")
-    print(f"scored (both correct): {len(scored)}")
-
     for r in rows:
         if not (r["baseline_correct"] and r["recall_correct"]):
             side = "baseline" if not r["baseline_correct"] else "recall"
@@ -241,12 +321,11 @@ def main():
             print(f"  baseline: {r['baseline_answer'][:200]}")
             print(f"  recall:   {r['recall_answer'][:200]}")
 
-    if scored:
-        reductions = [1 - r["recall_tokens"] / r["baseline_tokens"] for r in scored]
-        print(f"\nmedian token reduction: {statistics.median(reductions):.1%}")
-        print(f"range: {min(reductions):.1%} - {max(reductions):.1%}")
-    else:
-        print("\nno probes scored; no reduction reported")
+    phase("verdict")
+    reductions = (
+        [1 - r["recall_tokens"] / r["baseline_tokens"] for r in scored] if scored else []
+    )
+    verdict(rows, scored, reductions)
 
 
 if __name__ == "__main__":

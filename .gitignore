@@ -7,3 +7,4 @@ __pycache__/
 .bench_tenant
 probes/real_10.yaml
 .vscode/
+bench.cast

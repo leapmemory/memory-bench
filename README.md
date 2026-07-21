@@ -1,5 +1,7 @@
 # memory-bench
 
+![memory-bench run](assets/bench.gif)
+
 Same model, same questions, same accuracy. A fraction of the tokens.
 
 This is the open benchmark harness for [LeapMemory](https://leapmemory.com).
@@ -147,7 +149,7 @@ and will be published under this repository when run.
    python3 bench.py --corpus corpus/sample_30.jsonl --probes probes/sample_30.yaml --ingest
 
    # full sample, 98 turns, 12 probes (~$4.90 in LeapMemory credits)
-   python3 bench.py --corpus corpus/sample_100.jsonl --probes probes/sample.yaml --ingest
+   python3 bench.py --corpus corpus/sample_100.jsonl --probes probes/sample_100.yaml --ingest
 ```
 
 Costs, paid by you: LeapMemory bills $0.05 per memory saved (prepaid
