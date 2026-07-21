@@ -1,0 +1,26 @@
+# Probes for the free-tier sample corpus (28 turns, fits within 30 memories).
+# s07 is an abstention probe: the fact was never stated, correct answer UNKNOWN.
+- id: f01
+  question: "What was the order number of my Beacon Mini?"
+  expected: ["BX-4471"]
+- id: f02
+  question: "Which firmware version fixed my wifi dropping issue?"
+  expected: ["2.4.1"]
+- id: f03
+  question: "What is my dog's name?"
+  expected: ["Pixel"]
+- id: f04
+  question: "How much was refunded for the damaged tripod?"
+  expected: ["62.50"]
+- id: f05
+  question: "What is my current default shipping address?"
+  expected: ["Harbor Lane"]
+- id: f06
+  question: "What is my contact preference for support follow ups?"
+  expected: ["email"]
+- id: f07
+  question: "What color is my car?"
+  expected: ["UNKNOWN"]
+- id: f08
+  question: "What is my partner's name?"
+  expected: ["Dana"]

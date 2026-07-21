@@ -1,0 +1,28 @@
+{"role": "user", "content": "Hi, I just ordered a Beacon Mini from your site. Did it go through?", "ts": "2026-02-03T09:10:02Z"}
+{"role": "assistant", "content": "Welcome! Yes, order BX-4471 for one Beacon Mini is confirmed and ships within two business days to 14 Maple Street, Portstead.", "ts": "2026-02-03T09:10:29Z"}
+{"role": "user", "content": "Great. Is setup hard? I am not technical at all.", "ts": "2026-02-03T09:11:14Z"}
+{"role": "assistant", "content": "Under ten minutes for most people. Plug it in, open the Beacon app, and it walks you through wifi.", "ts": "2026-02-03T09:11:40Z"}
+{"role": "user", "content": "It arrived and setup worked, but it keeps dropping off wifi every few hours.", "ts": "2026-02-08T20:31:05Z"}
+{"role": "assistant", "content": "Sorry about that. Which firmware are you on? The app shows it under Device Info.", "ts": "2026-02-08T20:31:33Z"}
+{"role": "user", "content": "Says 2.3.9.", "ts": "2026-02-08T20:32:10Z"}
+{"role": "assistant", "content": "That explains it. The wifi drop issue is fixed in firmware 2.4.1. I have queued the update, it installs within the hour.", "ts": "2026-02-08T20:32:41Z"}
+{"role": "user", "content": "Update done, stable all day now. Thanks.", "ts": "2026-02-09T19:05:22Z"}
+{"role": "assistant", "content": "Great to hear. Firmware 2.4.1 also speeds up sensor pairing a little.", "ts": "2026-02-09T19:05:48Z"}
+{"role": "user", "content": "Bad news, my dog chewed the power cable. Hub fine, cable dead. Her name is Pixel and she shows zero remorse.", "ts": "2026-02-20T08:14:37Z"}
+{"role": "assistant", "content": "Glad Pixel is okay. A replacement cable is ordered and ships today to Maple Street.", "ts": "2026-02-20T08:15:04Z"}
+{"role": "user", "content": "Also the camera tripod I bought arrived with a bent leg. I would rather have a refund than a replacement.", "ts": "2026-03-04T17:42:19Z"}
+{"role": "assistant", "content": "Done. A refund of 62.50 is issued to your original payment method, no need to send the tripod back.", "ts": "2026-03-04T17:42:50Z"}
+{"role": "user", "content": "Refund landed, thanks. Also my partner Dana says hello, she loves the sunset light scene.", "ts": "2026-03-09T21:20:11Z"}
+{"role": "assistant", "content": "Hello to Dana! You can invite her as a second app user under Settings, Household if she wants control too.", "ts": "2026-03-09T21:20:39Z"}
+{"role": "user", "content": "Did that, works. Big news, I am moving at the end of the month.", "ts": "2026-03-25T10:03:44Z"}
+{"role": "assistant", "content": "Congrats! Tell me the new address when you have it and I will set it as your default for shipping.", "ts": "2026-03-25T10:04:10Z"}
+{"role": "user", "content": "Move is done. New address is 88 Harbor Lane, Portstead. Use that for everything from now on.", "ts": "2026-04-14T16:37:28Z"}
+{"role": "assistant", "content": "Updated. Your default shipping address is now 88 Harbor Lane, Portstead, replacing Maple Street.", "ts": "2026-04-14T16:37:55Z"}
+{"role": "user", "content": "The hub reconnected at the new place in two minutes, painless.", "ts": "2026-04-14T16:38:31Z"}
+{"role": "assistant", "content": "Smooth. Your schedules and scenes carried over automatically since they live on the hub.", "ts": "2026-04-14T16:38:57Z"}
+{"role": "user", "content": "One preference: no more phone call follow ups from support please. Email only.", "ts": "2026-05-02T11:26:40Z"}
+{"role": "assistant", "content": "Set. Contact preference is now email only, no phone calls, across support and order updates.", "ts": "2026-05-02T11:27:06Z"}
+{"role": "user", "content": "Perfect. And how long is my warranty? Never checked.", "ts": "2026-05-02T11:28:12Z"}
+{"role": "assistant", "content": "Two years from delivery, so your Beacon Mini is covered until February 2028. Chewed cables excluded, Pixel knows why.", "ts": "2026-05-02T11:28:39Z"}
+{"role": "user", "content": "Fair. Pixel accepts the terms. Talk soon.", "ts": "2026-05-02T11:29:15Z"}
+{"role": "assistant", "content": "Terms acknowledged by all parties. Enjoy the new place, and greetings to Dana.", "ts": "2026-05-02T11:29:41Z"}

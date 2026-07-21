@@ -1,0 +1,40 @@
+# Probes for the synthetic Sam/Beacon corpus. Each expected entry is a
+# string that must appear (case-insensitive) in a correct answer.
+# s11 is an abstention probe: the fact was never discussed, the correct
+# behavior in both conditions is to answer UNKNOWN.
+- id: s01
+  question: "What was the order number of Sam's original Beacon Mini purchase?"
+  expected: ["BX-4471"]
+- id: s02
+  question: "Which firmware version fixed the wifi dropping issue on Sam's hub?"
+  expected: ["2.4.1"]
+- id: s03
+  question: "What is the support ticket number for the flickering status LED?"
+  expected: ["90312"]
+- id: s04
+  question: "What is Sam's current default shipping address?"
+  expected: ["Harbor Lane"]
+- id: s05
+  question: "How much was refunded for the damaged tripod?"
+  expected: ["62.50"]
+- id: s06
+  question: "What is the name of Sam's dog?"
+  expected: ["Pixel"]
+- id: s07
+  question: "What is Sam's contact preference for support follow ups?"
+  expected: ["email"]
+- id: s08
+  question: "Until when is Sam's Beacon Mini under warranty?"
+  expected: ["2027"]
+- id: s09
+  question: "What was the order number of the replacement power cable?"
+  expected: ["BX-4502"]
+- id: s10
+  question: "What did I decide about upgrading to the Beacon Pro?"
+  expected: ["autumn"]
+- id: s11
+  question: "What color is Sam's car?"
+  expected: ["UNKNOWN"]
+- id: s12
+  question: "What is my partner's name?"
+  expected: ["Dana"]
