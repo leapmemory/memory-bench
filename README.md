@@ -51,7 +51,7 @@ number, not papered over.
 | Run | Probes | Baseline acc | Recall acc | Median token reduction |
 |---|---|---|---|---|
 | [Private, real 59-turn conversation (~25k tokens)](results/2026-07-private-59turn.md) | 10 | 10/10 | 10/10 | 82.6% |
-| [Public sample, 98 synthetic turns](results/2026-07-sample.md) | 12 | 12/12 | 12/12 | 91.7% |
+| [Public sample, 98 synthetic turns](results/2026-07-sample_100.md) | 12 | 12/12 | 12/12 | 91.7% |
 | [Free-tier quick sample, 28 turns](results/2026-07-sample30.md) | 8 | 8/8 | 8/8 | 78.2% |
 
 All runs at temperature 0: rerun them and the same table prints.
@@ -108,7 +108,7 @@ flowchart LR
         S --> Wk[graph walk, ranked facts]
         Qn --> H[hybrid search BM25 + kNN]
         Wk --> P[provenance: top facts pull their<br/>source chunks into the pool]
-        H --> RR[cross-encoder rerank<br/>pool 20, top 10 ship]
+        H --> RR[cross-encoder rerank]
         P --> RR
         Wk --> Ctx[recall context = facts + chunks]
         RR --> Ctx
