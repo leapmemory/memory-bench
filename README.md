@@ -129,10 +129,10 @@ and will be published under this repository when run.
 ## Run it yourself
 
 1. Sign up at [app.leapmemory.com](https://app.leapmemory.com/#/signup)
-2. API Keys → Create key (role admin, scope project). Copy the `lm_sk_` value
+2. API Keys → Create key (role admin). Copy the `lm_sk_` value
    from the reveal dialog; it is shown exactly once.
-3. Add prepaid credits in Billing (any amount; about $1.40 covers the quick
-   corpus).
+3. Add prepaid credits in Billing (minimum top-up $5, which covers the quick
+   corpus about three times over).
 4. Configure and install:
 
 ```bash
